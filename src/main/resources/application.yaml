@@ -1,0 +1,23 @@
+
+server:
+  port: 5001
+
+spring:
+  application:
+    name: inService
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 10MB
+
+  data:
+    mongodb:
+      database: inService_test
+      host: localhost
+      port: 27017
+
+# Optional: logging level
+logging:
+  level:
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
