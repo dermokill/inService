@@ -13,9 +13,12 @@ spring:
 
   data:
     mongodb:
-      database: inService_test
+      database: inServiceDB
       host: localhost
       port: 27017
+
+  main:
+    allow-circular-references: true
 
 # Optional: logging level
 logging:

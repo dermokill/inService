@@ -1,8 +1,9 @@
 package com.newdev.inservice.models;
 
 
+import com.newdev.inservice.models.enums.Gender;
+import com.newdev.inservice.models.enums.RoleEnum;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -16,13 +17,12 @@ import java.util.UUID;
 @Setter
 @Getter
 @ToString
-@Builder
 
 @Document(collection = "users")
 public class User {
 
     @Id
-    private UUID id = UUID.randomUUID(); // only works with constructor NOT with Builder
+    private String id = UUID.randomUUID().toString(); // only works with constructor NOT with Builder
 
     private String fName;
 
