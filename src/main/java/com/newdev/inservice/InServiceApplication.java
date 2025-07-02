@@ -5,7 +5,6 @@ import com.newdev.inservice.models.Client;
 import com.newdev.inservice.models.User;
 import com.newdev.inservice.models.enums.Gender;
 import com.newdev.inservice.models.enums.RoleEnum;
-import com.newdev.inservice.repository.ClientRepository;
 import com.newdev.inservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -20,12 +19,10 @@ public class InServiceApplication implements CommandLineRunner {
 
 
     private final UserRepository userRepository;
-    private final ClientRepository clientRepository;
 
     @Autowired
-    public InServiceApplication(UserRepository userRepository, ClientRepository clientRepository) {
+    public InServiceApplication(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.clientRepository = clientRepository;
     }
 
     public static void main(String[] args) {
@@ -62,7 +59,6 @@ public class InServiceApplication implements CommandLineRunner {
        List<User> users = userRepository.findAll();
 
        for (var user : users) {
-
            System.out.println(user);
        }
 

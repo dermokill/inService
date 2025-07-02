@@ -1,31 +1,42 @@
 package com.newdev.inservice.controller;
 
 
-import com.newdev.inservice.models.Client;
+import com.newdev.inservice.interfaces.IUserService;
 import com.newdev.inservice.models.User;
-import com.newdev.inservice.repository.ClientRepository;
+import com.newdev.inservice.models.enums.RoleEnum;
 import com.newdev.inservice.repository.UserRepository;
+import com.newdev.inservice.responseDtos.JsonResponse;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@Validated
 public class UserController {
 
     private final UserRepository userRepository;
-    private final ClientRepository clientRepository;
+
+    private final IUserService userService;
 
     @Autowired
-    public UserController(UserRepository userRepository, ClientRepository clientRepository) {
+    public UserController(UserRepository userRepository, IUserService userService) {
         this.userRepository = userRepository;
-        this.clientRepository = clientRepository;
+        this.userService = userService;
+
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<JsonResponse> test (@RequestHeader("Authorization") String jwt){
+
+        User user = userService.getProfile(jwt);
+
+        return new ResponseEntity<>(new JsonResponse("welcome to hell mfs"), HttpStatus.OK);
     }
 
     @GetMapping
@@ -37,9 +48,10 @@ public class UserController {
     }
 
     @GetMapping("/clients")
-    public ResponseEntity<List<Client>> getClients() {
+    public ResponseEntity<?> getClients(
+            @RequestParam("role") @NotBlank(message = "Role is required.") String role) {
 
-        List<Client> users = clientRepository.findAll();
+        List<User> users = userRepository.getUsersByRole(RoleEnum.valueOf(role));
 
         return new ResponseEntity<>(users, HttpStatus.OK);
     }

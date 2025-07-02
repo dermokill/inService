@@ -33,10 +33,10 @@ public class AppConfig {
                         Authorize
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers("/images/**").permitAll()
-                                //.requestMatchers("/api/**").authenticated()
+                             //   .requestMatchers("/api/**").authenticated()
                                 .anyRequest().permitAll()
                 )
-               // .addFilterBefore(new JwtTokenValidator() , BasicAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenValidator() , BasicAuthenticationFilter.class)
                 .csrf(csrf->csrf.disable())
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
                 .httpBasic(httpBasic -> httpBasic.disable())

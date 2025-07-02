@@ -13,7 +13,7 @@ spring:
 
   data:
     mongodb:
-      database: inServiceDB
+      database: inService_test
       host: localhost
       port: 27017
 
