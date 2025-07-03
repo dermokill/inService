@@ -37,7 +37,7 @@ public class Tasker extends User {
 
     private List<String> pictures;
 
-    private boolean verified;
+    private boolean verified = false;
 
     private ShopOwner shopOwner;
 

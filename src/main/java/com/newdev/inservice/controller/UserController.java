@@ -10,6 +10,8 @@ import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,20 +36,28 @@ public class UserController {
     @GetMapping("/test")
     public ResponseEntity<JsonResponse> test (@RequestHeader("Authorization") String jwt){
 
-        User user = userService.getProfile(jwt);
-
         return new ResponseEntity<>(new JsonResponse("welcome to hell mfs"), HttpStatus.OK);
     }
+
+    @GetMapping("/profile")
+    public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal UserDetails userDetails){
+
+        User user = userService.getProfile(userDetails);
+        user.setPassword(null);
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
 
     @GetMapping
     public ResponseEntity<List<User>> getUsers() {
 
-        List<User> users = userRepository.findAll();
+        List<User> users = userService.getAllUsers();
 
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @GetMapping("/clients")
+    @GetMapping("/clients")  // testing
     public ResponseEntity<?> getClients(
             @RequestParam("role") @NotBlank(message = "Role is required.") String role) {
 

@@ -1,7 +1,9 @@
 package com.newdev.inservice.config;
 
 
+import com.newdev.inservice.services.CustomUserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,6 +25,13 @@ import java.util.List;
 @EnableWebSecurity
 public class AppConfig {
 
+    private final CustomUserServiceImpl customUserService;
+
+    @Autowired
+    public AppConfig(CustomUserServiceImpl customUserService) {
+        this.customUserService = customUserService;
+    }
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -33,10 +42,10 @@ public class AppConfig {
                         Authorize
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers("/images/**").permitAll()
-                             //   .requestMatchers("/api/**").authenticated()
+                                .requestMatchers("/api/**").authenticated()
                                 .anyRequest().permitAll()
                 )
-                .addFilterBefore(new JwtTokenValidator() , BasicAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenValidator(customUserService), BasicAuthenticationFilter.class)
                 .csrf(csrf->csrf.disable())
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
                 .httpBasic(httpBasic -> httpBasic.disable())

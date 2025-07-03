@@ -17,17 +17,14 @@ public class JwtProvider {
     static SecretKey key = Keys.hmacShaKeyFor(JwtConstant.SECRET_KEY.getBytes());
 
 
-
-
-    public static String generateToken(Authentication auth) {
+    public static String generateToken(Authentication auth, String role) {
 
         Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
 
         String roles = populateAuthorities(authorities);
 
         String jwt = Jwts.builder().issuedAt(new Date()).expiration(new Date(new Date().getTime() + 86400000))
-                .claim("email", auth.getName()).claim("authorities", roles).signWith(key).compact();
-
+                .claim("email", auth.getName()).claim("role", role).claim("authorities", roles).signWith(key).compact();
 
         return jwt;
     }

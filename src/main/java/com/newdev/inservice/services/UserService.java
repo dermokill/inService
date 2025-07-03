@@ -7,6 +7,7 @@ import com.newdev.inservice.interfaces.IUserService;
 import com.newdev.inservice.models.User;
 import com.newdev.inservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,8 +25,8 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User getProfile(String jwt) {
-        return Optional.ofNullable(JwtProvider.getEmailFromJwtToken(jwt))
+    public User getProfile(UserDetails userDetails) {
+        return Optional.ofNullable(userDetails.getUsername())
                 .map(userRepository::findByEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User profile not found"));
     }

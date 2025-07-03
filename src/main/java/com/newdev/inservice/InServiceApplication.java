@@ -2,14 +2,18 @@ package com.newdev.inservice;
 
 
 import com.newdev.inservice.models.Client;
+import com.newdev.inservice.models.Tasker;
 import com.newdev.inservice.models.User;
 import com.newdev.inservice.models.enums.Gender;
 import com.newdev.inservice.models.enums.RoleEnum;
+import com.newdev.inservice.models.enums.SkillType;
+import com.newdev.inservice.models.enums.TaskerType;
 import com.newdev.inservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,10 +23,12 @@ public class InServiceApplication implements CommandLineRunner {
 
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public InServiceApplication(UserRepository userRepository) {
+    public InServiceApplication(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public static void main(String[] args) {
@@ -44,17 +50,20 @@ public class InServiceApplication implements CommandLineRunner {
 //                .build();
 
        // User client = new User();
-        Client  client = new Client();
-        client.setFName("hamid");
+        Tasker client = new Tasker();
+        client.setFName("saad");
         client.setGender(Gender.MALE);
         client.setLName("ham");
-        client.setEmail("hamid@gmail.com");
+        client.setEmail("saad@gmail.com");
+        client.setPassword(passwordEncoder.encode("123456789"));
         client.setArea("Fes");
-        client.setPersonalAddress("Saada");
-        client.setRole(RoleEnum.CLIENT);
+        client.setTaskerType(TaskerType.SHOP_OWNER);
+        client.setExperience("5years");
+        client.setSkill(SkillType.ELECTRICIEN);
+        client.setJobNumber(500);
+        client.setRole(RoleEnum.TASKER);
 
-       // userRepository.save(client);
-       // clientRepository.save(client);
+      //  userRepository.save(client);
 
        List<User> users = userRepository.findAll();
 
