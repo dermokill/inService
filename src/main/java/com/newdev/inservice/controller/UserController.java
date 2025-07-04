@@ -39,15 +39,15 @@ public class UserController {
         return new ResponseEntity<>(new JsonResponse("welcome to hell mfs"), HttpStatus.OK);
     }
 
+    // use @AuthenticationPrincipal to get all the loggedIn user info needed
     @GetMapping("/profile")
     public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal UserDetails userDetails){
 
         User user = userService.getProfile(userDetails);
-        user.setPassword(null);
+        user.setPassword("");
 
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
-
 
     @GetMapping
     public ResponseEntity<List<User>> getUsers() {

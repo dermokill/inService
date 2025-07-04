@@ -33,6 +33,11 @@ public class AppConfig {
     }
 
     @Bean
+    public JwtTokenValidator jwtTokenValidator() {
+        return new JwtTokenValidator(customUserService);
+    }
+
+    @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.sessionManagement(management ->
@@ -45,7 +50,7 @@ public class AppConfig {
                                 .requestMatchers("/api/**").authenticated()
                                 .anyRequest().permitAll()
                 )
-                .addFilterBefore(new JwtTokenValidator(customUserService), BasicAuthenticationFilter.class)
+                .addFilterBefore( jwtTokenValidator(), BasicAuthenticationFilter.class)
                 .csrf(csrf->csrf.disable())
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
                 .httpBasic(httpBasic -> httpBasic.disable())

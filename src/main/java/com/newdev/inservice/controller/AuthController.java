@@ -49,8 +49,8 @@ public class AuthController {
             Authentication authentication = authService.authenticate(username , password);
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            User user = userRepository.findByEmail(userDetails.getUsername());
+            // trying out new stuff
+            User user = userRepository.findByEmail(username);
             String role = user.getRole().toString().toUpperCase();
 
             String token = JwtProvider.generateToken(authentication, role);

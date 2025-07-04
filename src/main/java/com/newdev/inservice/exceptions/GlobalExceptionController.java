@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionController {
 
-
-    @ExceptionHandler(ConstraintViolationException.class) // For validation errors on DTOs RequestBody
+    // For validation errors on DTOs RequestBody
+    @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<JsonResponse> handleConstraintViolation(ConstraintViolationException ex) {
         System.out.println(ex.getMessage());
         return ResponseEntity.badRequest().body(
@@ -26,7 +26,8 @@ public class GlobalExceptionController {
                 ));
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class) //Applies to individual @RequestParam, @PathVariable, etc
+    //Applies to individual @RequestParam, @PathVariable, etc
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<JsonResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         System.out.println(ex.getMessage());
         String errorMessage = ex.getBindingResult().getFieldErrors()

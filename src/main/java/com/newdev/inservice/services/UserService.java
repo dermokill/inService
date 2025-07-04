@@ -26,6 +26,7 @@ public class UserService implements IUserService {
 
     @Override
     public User getProfile(UserDetails userDetails) {
+
         return Optional.ofNullable(userDetails.getUsername())
                 .map(userRepository::findByEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User profile not found"));
