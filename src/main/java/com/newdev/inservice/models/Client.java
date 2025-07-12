@@ -16,9 +16,11 @@ import java.util.List;
 
 public class Client extends User {
 
-    private String personalAddress;
+    private String clientCity;
 
-    private String area;
+    private String clientArea;
+
+    private String personalAddress;
 
     @DBRef
     private List<Demand> demands;
@@ -26,11 +28,6 @@ public class Client extends User {
     @DBRef
     private List<Job> jobs;
 
-    @Override
-    public String toString() {
-       String s = super.toString();
-       return s + " Client(personalAddress: " + personalAddress + " ,area: " + area+ ")";
-    }
 }
 
 

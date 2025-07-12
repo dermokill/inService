@@ -16,7 +16,7 @@ public class Enterprise {
 
     private String entrepriseName;
 
-    private int licenceNumber;
+    private int entrepriseLicenceNumber;
 
     private int employeeNumber;
 }

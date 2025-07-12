@@ -1,8 +1,7 @@
 package com.newdev.inservice.services;
 
 
-import com.newdev.inservice.interfaces.IAuthService;
-import com.newdev.inservice.repository.UserRepository;
+import com.newdev.inservice.serviceInterfaces.IAuthService;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

@@ -6,6 +6,7 @@ import com.newdev.inservice.models.enums.SkillType;
 import com.newdev.inservice.models.enums.TaskerType;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -21,9 +22,9 @@ public class Tasker extends User {
 
     private SkillType skill;
 
-    private String city;
+    private String taskerCity;
 
-    private String area;
+    private String taskerArea;
 
     private String experience;
 
@@ -31,11 +32,11 @@ public class Tasker extends User {
 
     private int rating;
 
-    private List<String> reviews;
+    private List<String> reviews = new ArrayList<>();
 
     private String mainPicture;
 
-    private List<String> pictures;
+    private List<String> pictures =  new ArrayList<>();
 
     private boolean verified = false;
 

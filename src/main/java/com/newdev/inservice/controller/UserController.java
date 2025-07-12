@@ -1,14 +1,17 @@
 package com.newdev.inservice.controller;
 
 
-import com.newdev.inservice.interfaces.IUserService;
+import com.newdev.inservice.requestDtos.ImagesDto;
+import com.newdev.inservice.serviceInterfaces.IUserService;
 import com.newdev.inservice.models.User;
 import com.newdev.inservice.models.enums.RoleEnum;
 import com.newdev.inservice.repository.UserRepository;
 import com.newdev.inservice.responseDtos.JsonResponse;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -55,6 +58,22 @@ public class UserController {
         List<User> users = userService.getAllUsers();
 
         return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @PutMapping(value = "insert-images",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> insertImagesTasker (@AuthenticationPrincipal UserDetails userDetails,
+                                                 @Valid @ModelAttribute ImagesDto imagesDto) throws Exception
+    {
+        userService.insertTaskerImages(userDetails,imagesDto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("validate-tasker/{id}")
+    public ResponseEntity<?> validateTasker (@AuthenticationPrincipal UserDetails userDetails,
+                                             @PathVariable String id)
+    {
+        userService.validateTasker(userDetails,id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/clients")  // testing

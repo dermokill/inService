@@ -56,7 +56,7 @@ public class InServiceApplication implements CommandLineRunner {
         client.setLName("ham");
         client.setEmail("saad@gmail.com");
         client.setPassword(passwordEncoder.encode("123456789"));
-        client.setArea("Fes");
+        client.setTaskerArea("Fes");
         client.setTaskerType(TaskerType.SHOP_OWNER);
         client.setExperience("5years");
         client.setSkill(SkillType.ELECTRICIEN);

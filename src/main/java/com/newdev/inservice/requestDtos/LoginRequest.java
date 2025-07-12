@@ -1,16 +1,26 @@
 package com.newdev.inservice.requestDtos;
 
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public record LoginRequest(String email, String password) {
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 
-    @Override
-    public String email() {
-        return email;
-    }
+public class LoginRequest {
 
-    @Override
-    public String password() {
-        return password;
-    }
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
+    private String email;
+
+    @NotBlank(message = "Password is required")
+    private String password;
+
 }

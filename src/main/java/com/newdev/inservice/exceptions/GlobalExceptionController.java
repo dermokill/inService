@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MultipartException;
 
 import java.util.stream.Collectors;
 
@@ -61,9 +62,24 @@ public class GlobalExceptionController {
         return new ResponseEntity<>(new JsonResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(IllegalArgException.class)
+    public ResponseEntity<JsonResponse> IllegalArgException(IllegalArgException ex) {
+        System.out.println(ex.getMessage());
+        return new ResponseEntity<>(new JsonResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MultipartException.class)
+    public ResponseEntity<JsonResponse> handleMultipartException(MultipartException ex) {
+        System.out.println(ex.getMessage());
+        ex.printStackTrace();
+        return new ResponseEntity<>(new JsonResponse("Multipart Error: " + ex.getMessage()),
+                HttpStatus.BANDWIDTH_LIMIT_EXCEEDED);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<JsonResponse> handleGenericException(Exception ex) {
         System.out.println(ex.getMessage());
+        ex.printStackTrace();
         return new ResponseEntity<>(new JsonResponse("An unexpected error occurred: "+ ex.getMessage()),
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }

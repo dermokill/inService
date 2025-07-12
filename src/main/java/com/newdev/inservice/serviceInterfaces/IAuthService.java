@@ -1,4 +1,4 @@
-package com.newdev.inservice.interfaces;
+package com.newdev.inservice.serviceInterfaces;
 
 
 import org.springframework.security.core.Authentication;

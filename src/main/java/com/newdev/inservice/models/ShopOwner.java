@@ -14,5 +14,5 @@ public class ShopOwner {
 
     private String shopAddress;
 
-    private int licenceNumber;
+    private int shopLicenceNumber;
 }
