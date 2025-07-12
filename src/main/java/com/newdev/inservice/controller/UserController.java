@@ -68,7 +68,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("validate-tasker/{id}")
+    @PutMapping("validate-tasker/{id}") // ADMIN Only
     public ResponseEntity<?> validateTasker (@AuthenticationPrincipal UserDetails userDetails,
                                              @PathVariable String id)
     {
