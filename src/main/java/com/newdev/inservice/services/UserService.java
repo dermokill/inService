@@ -15,6 +15,10 @@ import com.newdev.inservice.models.enums.SkillType;
 import com.newdev.inservice.models.enums.TaskerType;
 import com.newdev.inservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -67,9 +71,18 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<User> getAllUsers() {
+    public Page<User> getClientsAndAdmins(UserDetails userDetails, String role, int page, int size) {
 
-        return userRepository.findAll();
+        User admin = Optional.ofNullable(userDetails.getUsername())
+                .map(userRepository::findByEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Admin profile not found"));
+
+        if(!admin.getRole().equals(RoleEnum.ADMIN))
+            throw new UnauthorizedException("only an Admin can see clients and admins");
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+
+        return userRepository.findByRole(RoleEnum.valueOf(role.toUpperCase()), pageable);
     }
 
     @Override
@@ -77,6 +90,9 @@ public class UserService implements IUserService {
 
         if(userRepository.existsByEmail(dto.getEmail()))
             throw new ConflictException("Email already exists");
+
+        if(userRepository.existsByPhone(dto.getPhone()))
+            throw new ConflictException("PhoneNumber already exists");
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
@@ -130,6 +146,9 @@ public class UserService implements IUserService {
 
         if(userRepository.existsByEmail(dto.getEmail()))
             throw new ConflictException("Email already exists");
+
+        if(userRepository.existsByPhone(dto.getPhone()))
+            throw new ConflictException("PhoneNumber already exists");
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 

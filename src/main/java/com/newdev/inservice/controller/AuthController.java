@@ -5,7 +5,6 @@ import com.newdev.inservice.config.JwtProvider;
 
 import com.newdev.inservice.requestDtos.RegisterClientDto;
 import com.newdev.inservice.requestDtos.RegisterTaskerDto;
-import com.newdev.inservice.responseDtos.JsonResponse;
 import com.newdev.inservice.serviceInterfaces.IAuthService;
 import com.newdev.inservice.models.User;
 import com.newdev.inservice.repository.UserRepository;

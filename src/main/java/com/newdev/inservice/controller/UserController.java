@@ -1,7 +1,9 @@
 package com.newdev.inservice.controller;
 
 
+import com.newdev.inservice.exceptions.BadRequestException;
 import com.newdev.inservice.requestDtos.ImagesDto;
+import com.newdev.inservice.requestDtos.RoleDto;
 import com.newdev.inservice.serviceInterfaces.IUserService;
 import com.newdev.inservice.models.User;
 import com.newdev.inservice.models.enums.RoleEnum;
@@ -9,6 +11,8 @@ import com.newdev.inservice.repository.UserRepository;
 import com.newdev.inservice.responseDtos.JsonResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -52,13 +57,7 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @GetMapping
-    public ResponseEntity<List<User>> getUsers() {
 
-        List<User> users = userService.getAllUsers();
-
-        return new ResponseEntity<>(users, HttpStatus.OK);
-    }
 
     @PutMapping(value = "insert-images",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> insertImagesTasker (@AuthenticationPrincipal UserDetails userDetails,
@@ -68,20 +67,17 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("validate-tasker/{id}") // ADMIN Only
-    public ResponseEntity<?> validateTasker (@AuthenticationPrincipal UserDetails userDetails,
-                                             @PathVariable String id)
-    {
-        userService.validateTasker(userDetails,id);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 
-    @GetMapping("/clients")  // testing
-    public ResponseEntity<?> getClients(
-            @RequestParam("role") @NotBlank(message = "Role is required.") String role) {
 
-        List<User> users = userRepository.getUsersByRole(RoleEnum.valueOf(role));
-
-        return new ResponseEntity<>(users, HttpStatus.OK);
-    }
+//    @GetMapping("/clients")  // testing
+//    public ResponseEntity<?> getClients(
+//            @RequestBody RoleDto dto) {
+//
+//
+//        List<User> users = (dto.role() != null)
+//                ? userRepository.getUsersByRole(RoleEnum.valueOf(dto.role().toUpperCase()))
+//                : userRepository.findAll();
+//
+//        return new ResponseEntity<>(users, HttpStatus.OK);
+//    }
 }
