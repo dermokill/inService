@@ -21,5 +21,6 @@ public class Message {
     private User sender;
 
     private String content;
-    private LocalDateTime sentAt;
+
+    private LocalDateTime sentAt = LocalDateTime.now();
 }

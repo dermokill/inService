@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/v1/admin/users")
@@ -35,11 +35,10 @@ public class AdminController {
     }
 
     @GetMapping // ADMIN Only
-    public ResponseEntity<PagedResponseDto<User>> getClientsAndAdmins(@AuthenticationPrincipal UserDetails userDetails,
+    public ResponseEntity<PagedResponseDto<User>> getAllUsers(@AuthenticationPrincipal UserDetails userDetails,
                                                           @RequestBody RoleDto dto) {
 
-        System.out.println(dto.getSize() +" "+ dto.getPage());
-
+        System.out.println(dto.getSize() +" Size "+ dto.getPage()+" Pages ");
         Page<User> users = userService.getClientsAndAdmins(userDetails,
                 dto.getRole(), dto.getPage(), dto.getSize());
 

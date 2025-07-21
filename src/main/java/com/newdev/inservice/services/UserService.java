@@ -204,12 +204,12 @@ public class UserService implements IUserService {
 
         tasker.setVerified(false);
 
-        if (dto.getTaskerType().equals(TaskerType.SHOP_OWNER.toString())) {
+        if (dto.getTaskerType().toUpperCase().equals(TaskerType.SHOP_OWNER.toString())) {
             ShopOwner shopOwner = new ShopOwner();
             shopOwner.setShopAddress(dto.getShopAddress());
             shopOwner.setShopLicenceNumber(dto.getShopLicenceNumber());
             tasker.setShopOwner(shopOwner);
-        } else if (dto.getTaskerType().equals(TaskerType.ENTREPRISE.toString())) {
+        } else if (dto.getTaskerType().toUpperCase().equals(TaskerType.ENTREPRISE.toString())) {
             Enterprise enterprise = new Enterprise();
             enterprise.setEntrepriseName(dto.getEntrepriseName());
             enterprise.setEntrepriseLicenceNumber(dto.getEntrepriseLicenceNumber());

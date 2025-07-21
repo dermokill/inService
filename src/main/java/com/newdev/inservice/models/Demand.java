@@ -2,6 +2,7 @@ package com.newdev.inservice.models;
 
 
 import com.newdev.inservice.models.enums.DemandStatus;
+import com.newdev.inservice.models.enums.SkillType;
 import com.newdev.inservice.models.enums.TaskerType;
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -31,18 +32,19 @@ public class Demand {
     @DBRef
     private Tasker tasker;
 
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    private LocalDateTime updatedAt;
 
     private DemandStatus status =  DemandStatus.PENDING;
 
-    private TaskerType taskType;
+    private SkillType taskType;
 
     private String description;
 
     private String location;
 
     private LocalDateTime requestDate;
-
 
     private List<Message> messages;
 
