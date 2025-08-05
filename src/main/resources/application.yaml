@@ -14,6 +14,19 @@ spring:
       max-request-size: 50MB
       file-size-threshold: 0
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: yunusaouam22@gmail.com
+    password: waiqxnmzefgmlmrr
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 
   data:
     mongodb:

@@ -33,11 +33,13 @@ public class DemandService implements IDemandService {
     private final DemandRepository demandRepository;
 
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
     public DemandService(DemandRepository demandRepository,
-                         UserRepository userRepository) {
+                         UserRepository userRepository, EmailService emailService) {
         this.demandRepository = demandRepository;
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -46,9 +48,6 @@ public class DemandService implements IDemandService {
         User user = Optional.ofNullable(userDetails.getUsername())
                 .map(userRepository::findByEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("client profile not found"));
-
-//        if(!user.getRole().equals(RoleEnum.CLIENT))
-//            throw new UnauthorizedException("only Clients can request a demand from a tasker");
 
         if (user.getId().equals(taskerId))
             throw new UnauthorizedException("You cant request a task from yourself");
@@ -63,8 +62,6 @@ public class DemandService implements IDemandService {
             throw new UnauthorizedException("only Taskers can receive demand from a client");
         Tasker tasker = (Tasker) user2;
 
-        List<Message> messages = new ArrayList<>();
-        List<Demand> demands = new ArrayList<>();
 
         // Format : 2024-07-21T18:30
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -81,7 +78,6 @@ public class DemandService implements IDemandService {
         Message message = new Message();
         message.setSender(client);
         message.setContent(demandDto.getMessage());
-        messages.add(message);
 
         Demand demand = new Demand();
         demand.setTasker(tasker);
@@ -91,16 +87,26 @@ public class DemandService implements IDemandService {
         demand.setTaskType(tasker.getSkill());
         demand.setStatus(DemandStatus.PENDING);
         demand.setRequestDate(dateTime);
-        demand.setMessages(messages);
+        demand.setMessages(List.of(message));
 
         demandRepository.save(demand);
-        //messageRepository.save(message);
 
-        demands.add(demand);
-        tasker.setDemands(demands);
-        client.setDemands(demands);
+        tasker.getDemands().add(demand);
+        client.getDemands().add(demand);
         userRepository.save(tasker);
         userRepository.save(client);
+
+        //Sending the email to tasker
+        String subject = "New Demand Received";
+        String body = String.format("Hello %s,\n\nYou have received a new demand from %s %s.\n\nDescription: %s\n\nLocation: %s\n\nRequest Date: %s. \n\nClient-Message: %s. \n\nPlease log in to your dashboard to respond.",
+                tasker.getFName(),
+                client.getFName(),
+                client.getLName(),
+                demand.getDescription(),
+                demand.getLocation(),
+                demand.getRequestDate().toString().substring(0,10)+" at "+demand.getRequestDate().toString().substring(11),
+                message.getContent());
+        emailService.sendEmail(tasker.getEmail(), subject, body);
     }
 
     @Override
