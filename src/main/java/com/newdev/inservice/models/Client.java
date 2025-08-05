@@ -3,8 +3,8 @@ package com.newdev.inservice.models;
 
 import lombok.*;
 import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -23,10 +23,10 @@ public class Client extends User {
     private String personalAddress;
 
     @DBRef
-    private List<Demand> demands;
+    private List<Demand> demands =  new ArrayList<>();
 
     @DBRef
-    private List<Job> jobs;
+    private List<Job> jobs =   new ArrayList<>();
 
 }
 

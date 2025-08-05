@@ -1,9 +1,9 @@
 package com.newdev.inservice.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.newdev.inservice.models.enums.DemandStatus;
 import com.newdev.inservice.models.enums.SkillType;
-import com.newdev.inservice.models.enums.TaskerType;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;

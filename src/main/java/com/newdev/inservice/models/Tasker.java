@@ -45,8 +45,8 @@ public class Tasker extends User {
     private Enterprise enterprise;
 
     @DBRef
-    private List<Demand> demands;
+    private List<Demand> demands =  new ArrayList<>();
 
     @DBRef
-    private List<Job> jobs;
+    private List<Job> jobs =   new ArrayList<>();
 }

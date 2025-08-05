@@ -1,11 +1,13 @@
 package com.newdev.inservice.services;
 
 
+import com.newdev.inservice.Mapping.UserMapper;
 import com.newdev.inservice.config.JwtProvider;
 import com.newdev.inservice.exceptions.*;
 import com.newdev.inservice.requestDtos.ImagesDto;
 import com.newdev.inservice.requestDtos.RegisterClientDto;
 import com.newdev.inservice.requestDtos.RegisterTaskerDto;
+import com.newdev.inservice.responseDtos.*;
 import com.newdev.inservice.serviceInterfaces.IAuthService;
 import com.newdev.inservice.serviceInterfaces.IUserService;
 import com.newdev.inservice.models.*;
@@ -47,27 +49,48 @@ public class UserService implements IUserService {
 
     private final PasswordEncoder passwordEncoder;
 
-
     private final String uploadDir = System.getProperty("user.dir") + "/src/main/resources/static/images";
 
     private final IAuthService authService;
 
+    private final UserMapper userMapper;
+
 
     @Autowired
     public UserService(UserRepository userRepository
-            ,PasswordEncoder passwordEncoder
-            ,IAuthService authService) {
+            , PasswordEncoder passwordEncoder
+            , IAuthService authService, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authService = authService;
+        this.userMapper = userMapper;
     }
 
     @Override
-    public User getProfile(UserDetails userDetails) {
+    public Object getProfile(UserDetails userDetails) {
 
-        return Optional.ofNullable(userDetails.getUsername())
+        User user = Optional.ofNullable(userDetails.getUsername())
                 .map(userRepository::findByEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User profile not found"));
+
+        if(user.getRole() == RoleEnum.ADMIN) {
+            return userMapper.mapToAdminDto((Admin) user);
+
+        }else if (user.getRole() == RoleEnum.CLIENT){
+            return userMapper.mapToClientDto((Client) user);
+
+        }else if (user.getRole() == RoleEnum.TASKER) {
+            Tasker tasker = (Tasker) user;
+
+            return switch (tasker.getTaskerType()) {
+                case SHOP_OWNER -> userMapper.mapToTaskerShopOwnerDto(tasker);
+                case ENTREPRISE -> userMapper.mapToTaskerEntrepriseDto(tasker);
+                default -> throw new BadRequestException("Unsupported tasker type");
+            };
+
+        }else {
+            throw new UnauthorizedException("Role not valid");
+        }
     }
 
     @Override
@@ -105,10 +128,10 @@ public class UserService implements IUserService {
         }
 
         String picture;
-        if(dto.getGender().equals("MALE")) {
-            picture = uploadDir + "/user_male.jpg";
-        }else {
-            picture = uploadDir + "/user_female.jpg";
+        if (dto.getGender().equals("MALE")) {
+            picture = "images/user_male.jpg";
+        } else {
+            picture = "images/user_female.jpg";
         }
 
         RoleEnum role = RoleEnum.valueOf(dto.getRole());
@@ -161,10 +184,10 @@ public class UserService implements IUserService {
         }
 
         String picture;
-        if(dto.getGender().equals("MALE")) {
-            picture = uploadDir + "/user_male.jpg";
-        }else {
-            picture = uploadDir + "/user_female.jpg";
+        if (dto.getGender().equals("MALE")) {
+            picture = "images/user_male.jpg";
+        } else {
+            picture = "images/user_female.jpg";
         }
 
         RoleEnum role = RoleEnum.valueOf(dto.getRole());

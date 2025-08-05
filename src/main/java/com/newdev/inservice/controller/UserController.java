@@ -30,13 +30,10 @@ import java.util.Map;
 @Validated
 public class UserController {
 
-    private final UserRepository userRepository;
-
     private final IUserService userService;
 
     @Autowired
-    public UserController(UserRepository userRepository, IUserService userService) {
-        this.userRepository = userRepository;
+    public UserController(IUserService userService) {
         this.userService = userService;
 
     }
@@ -51,8 +48,7 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal UserDetails userDetails){
 
-        User user = userService.getProfile(userDetails);
-        user.setPassword("");
+        Object user = userService.getProfile(userDetails);
 
         return new ResponseEntity<>(user, HttpStatus.OK);
     }

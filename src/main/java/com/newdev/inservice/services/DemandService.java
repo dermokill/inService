@@ -5,6 +5,7 @@ import com.newdev.inservice.exceptions.BadRequestException;
 import com.newdev.inservice.exceptions.ResourceNotFoundException;
 import com.newdev.inservice.exceptions.UnauthorizedException;
 import com.newdev.inservice.models.*;
+import com.newdev.inservice.responseDtos.SenderDto;
 import com.newdev.inservice.models.enums.DemandStatus;
 import com.newdev.inservice.models.enums.RoleEnum;
 import com.newdev.inservice.repository.DemandRepository;
@@ -23,7 +24,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,14 +47,19 @@ public class DemandService implements IDemandService {
                 .map(userRepository::findByEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("client profile not found"));
 
-        if(!user.getRole().equals(RoleEnum.CLIENT))
-            throw new UnauthorizedException("only Clients can request a demand from a tasker");
-        Client client = (Client) user;
+//        if(!user.getRole().equals(RoleEnum.CLIENT))
+//            throw new UnauthorizedException("only Clients can request a demand from a tasker");
+
+        if (user.getId().equals(taskerId))
+            throw new UnauthorizedException("You cant request a task from yourself");
+
+        // Any User can request a task no matter the role
+        Client client = (Client) user; // FIX TASKER CANT BE CAST TO CLIENT LATER
 
         User user2 = userRepository.findById(taskerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Tasker profile not found"));
 
-        if(!user2.getRole().equals(RoleEnum.TASKER))
+        if (!user2.getRole().equals(RoleEnum.TASKER))
             throw new UnauthorizedException("only Taskers can receive demand from a client");
         Tasker tasker = (Tasker) user2;
 
@@ -91,11 +96,11 @@ public class DemandService implements IDemandService {
         demandRepository.save(demand);
         //messageRepository.save(message);
 
-       /* demands.add(demand);
+        demands.add(demand);
         tasker.setDemands(demands);
         client.setDemands(demands);
         userRepository.save(tasker);
-        userRepository.save(client); */
+        userRepository.save(client);
     }
 
     @Override
@@ -110,7 +115,7 @@ public class DemandService implements IDemandService {
                 .map(userRepository::findByEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("tasker profile not found"));
 
-        if(!user2.getRole().equals(RoleEnum.TASKER))
+        if (!user2.getRole().equals(RoleEnum.TASKER))
             throw new UnauthorizedException("only Taskers can use this api");
         Tasker tasker = (Tasker) user2;
 
@@ -119,7 +124,7 @@ public class DemandService implements IDemandService {
 
         Page<Demand> demands = demandRepository.findByTaskerId(tasker.getId(), pageable);
 
-        if(!tasker.getId().equals(demands.getContent().get(0).getTasker().getId()))
+        if (!tasker.getId().equals(demands.getContent().get(0).getTasker().getId()))
             throw new UnauthorizedException("Only Taskers can see their Demands");
 
         for (Demand demand : demands.getContent()) {
@@ -128,14 +133,6 @@ public class DemandService implements IDemandService {
 
             if (demand.getClient() != null)
                 demand.getClient().setPassword("");
-
-            if (demand.getMessages() != null) {
-                demand.getMessages().forEach(message -> {
-                    if (message.getSender() != null) {
-                        message.getSender().setPassword("");
-                    }
-                });
-            }
         }
         return demands;
     }

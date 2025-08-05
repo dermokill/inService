@@ -10,6 +10,7 @@ import com.newdev.inservice.serviceInterfaces.ITaskerService;
 import com.newdev.inservice.services.DemandService;
 import com.newdev.inservice.services.TaskerService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,7 +28,9 @@ public class TaskerController {
 
     private final IDemandService demandService;
 
-    public TaskerController(ITaskerService taskerService, IDemandService demandService) {
+    @Autowired
+    public TaskerController(ITaskerService taskerService,
+                            IDemandService demandService) {
         this.taskerService = taskerService;
         this.demandService = demandService;
     }

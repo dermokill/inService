@@ -9,12 +9,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public interface IUserService {
 
-    User getProfile(UserDetails userDetails);
+    Object getProfile(UserDetails userDetails);
 
     Page<User> getClientsAndAdmins(UserDetails userDetails, String role, int page, int size);
 

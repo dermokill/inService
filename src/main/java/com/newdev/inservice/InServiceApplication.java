@@ -1,6 +1,7 @@
 package com.newdev.inservice;
 
 
+import com.newdev.inservice.models.Admin;
 import com.newdev.inservice.models.Client;
 import com.newdev.inservice.models.Tasker;
 import com.newdev.inservice.models.User;
@@ -15,6 +16,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,21 +51,24 @@ public class InServiceApplication implements CommandLineRunner {
 //                .gender(Gender.MALE)
 //                .build();
 
-       // User client = new User();
-        Tasker client = new Tasker();
-        client.setFName("saad");
+        Admin client = (Admin) userRepository.getById("071ff29b-2b0e-44f3-a0ae-035d554a548d");
+       // Tasker client = new Tasker();
+        client.setFName("admin");
         client.setGender(Gender.MALE);
-        client.setLName("ham");
-        client.setEmail("saad@gmail.com");
+        client.setLName("admin");
+        client.setEmail("admin@gmail.com");
         client.setPassword(passwordEncoder.encode("123456789"));
-        client.setTaskerArea("Fes");
-        client.setTaskerType(TaskerType.SHOP_OWNER);
-        client.setExperience("5years");
-        client.setSkill(SkillType.ELECTRICIEN);
-        client.setJobNumber(500);
-        client.setRole(RoleEnum.TASKER);
+        client.setCin("CD151515");
+        client.setRole(RoleEnum.ADMIN);
+        client.setPhone("123456789");
+        client.setBirthdate(LocalDate.of(2000, 8, 5));
+//        client.setTaskerArea("Fes");
+//        client.setTaskerType(TaskerType.SHOP_OWNER);
+//        client.setExperience("5years");
+//        client.setSkill(SkillType.ELECTRICIEN);
+//        client.setJobNumber(500);
 
-      //  userRepository.save(client);
+       // userRepository.save(client);
 
        List<User> users = userRepository.findAll();
 

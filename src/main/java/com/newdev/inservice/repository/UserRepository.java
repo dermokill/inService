@@ -1,5 +1,6 @@
 package com.newdev.inservice.repository;
 
+import com.newdev.inservice.models.Admin;
 import com.newdev.inservice.models.Client;
 import com.newdev.inservice.models.User;
 import com.newdev.inservice.models.enums.RoleEnum;
@@ -21,4 +22,6 @@ public interface UserRepository  extends MongoRepository<User, String> {
     boolean existsByIdIsNotAndEmail(String id, String email);
 
     Page<User> findByRole(RoleEnum role, Pageable pageable);
+
+    User getById(String uuid);
 }
