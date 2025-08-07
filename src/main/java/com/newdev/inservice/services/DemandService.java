@@ -34,12 +34,14 @@ public class DemandService implements IDemandService {
 
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final WhatsAppService whatsAppService;
 
     public DemandService(DemandRepository demandRepository,
-                         UserRepository userRepository, EmailService emailService) {
+                         UserRepository userRepository, EmailService emailService, WhatsAppService whatsAppService) {
         this.demandRepository = demandRepository;
         this.userRepository = userRepository;
         this.emailService = emailService;
+        this.whatsAppService = whatsAppService;
     }
 
     @Override
@@ -107,6 +109,21 @@ public class DemandService implements IDemandService {
                 demand.getRequestDate().toString().substring(0,10)+" at "+demand.getRequestDate().toString().substring(11),
                 message.getContent());
         emailService.sendEmail(tasker.getEmail(), subject, body);
+
+        //Sending whatsapp message to tasker
+        String whatsappMessage = String.format(
+                "Hi %s 👋,\nYou just received a new demand from %s %s.\n\n📌 Description: %s\n\n📍 Location: %s\n\n📅 Date: %s. \n\nClient-Message: %s. \n\nPlease check your dashboard.",
+                tasker.getFName(),
+                client.getFName(),
+                client.getLName(),
+                demand.getDescription(),
+                demand.getLocation(),
+                demand.getRequestDate().toString().substring(0,10)+" at "+demand.getRequestDate().toString().substring(11),
+                message.getContent()
+        );
+
+// Use verified phone number in E.164 format without spaces (e.g., +2126...)
+        whatsAppService.sendWhatsAppMessage(tasker.getPhone(), whatsappMessage);
     }
 
     @Override
