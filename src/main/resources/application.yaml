@@ -26,14 +26,11 @@ spring:
           auth: true
           starttls:
             enable: true
-
-
   data:
     mongodb:
       database: inService_test
       host: localhost
       port: 27017
-
   main:
     allow-circular-references: true
 
@@ -41,3 +38,9 @@ spring:
 logging:
   level:
     org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+
+twilio:
+  accountSid: ${TWILIO_ACCOUNT_SID}
+  authToken: ${TWILIO_AUTH_TOKEN}
+  whatsapp:
+     from: ${TWILIO_WHATSAPP_FROM}
