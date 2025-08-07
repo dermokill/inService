@@ -140,7 +140,7 @@ public class UserMapper {
 
 
 
-    private DemandResponseDto mapToDemandDto(Demand demand) {
+    public DemandResponseDto mapToDemandDto(Demand demand) {
         List<MessageResponseDto> messages = demand.getMessages().stream()
                 .map(this::mapToMessageDto)
                 .toList();
@@ -166,7 +166,7 @@ public class UserMapper {
         );
     }
 
-    private JobResponseDto mapToJobDto(Job job) {
+    public JobResponseDto mapToJobDto(Job job) {
         Demand originalDemand = job.getOriginalDemand();
 
         return new JobResponseDto(
@@ -190,7 +190,7 @@ public class UserMapper {
         );
     }
 
-    private MessageResponseDto mapToMessageDto(Message message) {
+    public MessageResponseDto mapToMessageDto(Message message) {
         return new MessageResponseDto(
                 message.getId(),
                 new SenderDto(

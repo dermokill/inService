@@ -1,18 +1,20 @@
 package com.newdev.inservice.services;
 
 
+import com.newdev.inservice.Mapping.UserMapper;
 import com.newdev.inservice.exceptions.BadRequestException;
 import com.newdev.inservice.exceptions.ResourceNotFoundException;
 import com.newdev.inservice.exceptions.UnauthorizedException;
 import com.newdev.inservice.models.*;
-import com.newdev.inservice.responseDtos.SenderDto;
 import com.newdev.inservice.models.enums.DemandStatus;
 import com.newdev.inservice.models.enums.RoleEnum;
 import com.newdev.inservice.repository.DemandRepository;
 import com.newdev.inservice.repository.UserRepository;
 import com.newdev.inservice.requestDtos.DemandDto;
 import com.newdev.inservice.requestDtos.PageDto;
+import com.newdev.inservice.responseDtos.DemandResponseDto;
 import com.newdev.inservice.serviceInterfaces.IDemandService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +25,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,15 +34,24 @@ public class DemandService implements IDemandService {
     private final DemandRepository demandRepository;
 
     private final UserRepository userRepository;
+
     private final EmailService emailService;
+
     private final WhatsAppService whatsAppService;
 
+    private final UserMapper userMapper;
+
+    @Autowired
     public DemandService(DemandRepository demandRepository,
-                         UserRepository userRepository, EmailService emailService, WhatsAppService whatsAppService) {
+                         UserRepository userRepository,
+                         EmailService emailService,
+                         WhatsAppService whatsAppService,
+                         UserMapper userMapper) {
         this.demandRepository = demandRepository;
         this.userRepository = userRepository;
         this.emailService = emailService;
         this.whatsAppService = whatsAppService;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -121,18 +131,20 @@ public class DemandService implements IDemandService {
                 demand.getRequestDate().toString().substring(0,10)+" at "+demand.getRequestDate().toString().substring(11),
                 message.getContent()
         );
-
-// Use verified phone number in E.164 format without spaces (e.g., +2126...)
         whatsAppService.sendWhatsAppMessage(tasker.getPhone(), whatsappMessage);
     }
 
     @Override
-    public Demand getDemandById(String demandId) {
-        return null;
+    public DemandResponseDto getDemandById(String demandId) {
+
+        Demand demand = demandRepository.findById(demandId)
+                .orElseThrow(() -> new ResourceNotFoundException("Demand with id " + demandId + " not found"));
+
+        return userMapper.mapToDemandDto(demand);
     }
 
     @Override
-    public Page<Demand> getDemandsByTasker(UserDetails userDetails, PageDto pageDto) {
+    public Page<DemandResponseDto> getDemandsByTasker(UserDetails userDetails, PageDto pageDto) {
 
         User user2 = Optional.ofNullable(userDetails.getUsername())
                 .map(userRepository::findByEmail)
@@ -145,19 +157,9 @@ public class DemandService implements IDemandService {
         Pageable pageable = PageRequest.of(pageDto.getPage(), pageDto.getSize(),
                 Sort.by("createdAt").ascending());
 
-        Page<Demand> demands = demandRepository.findByTaskerId(tasker.getId(), pageable);
+        Page<Demand> demandPage = demandRepository.findByTaskerId(tasker.getId(), pageable);
 
-        if (!tasker.getId().equals(demands.getContent().get(0).getTasker().getId()))
-            throw new UnauthorizedException("Only Taskers can see their Demands");
-
-        for (Demand demand : demands.getContent()) {
-            if (demand.getTasker() != null)
-                demand.getTasker().setPassword("");
-
-            if (demand.getClient() != null)
-                demand.getClient().setPassword("");
-        }
-        return demands;
+        return demandPage.map(userMapper::mapToDemandDto);
     }
 
 

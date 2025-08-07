@@ -14,7 +14,7 @@ spring:
       max-request-size: 50MB
       file-size-threshold: 0
 
-  mail:
+  mail: # check keys file
     host: smtp.gmail.com
     port: 587
     username: ${EMAIL_USERNAME}
@@ -39,7 +39,7 @@ logging:
   level:
     org.springframework.data.mongodb.core.MongoTemplate: DEBUG
 
-twilio:
+twilio: # check keys file
   accountSid: ${TWILIO_ACCOUNT_SID}
   authToken: ${TWILIO_AUTH_TOKEN}
   whatsapp:
