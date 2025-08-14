@@ -7,5 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface IAuthService {
 
-    public Authentication authenticate(String username, String password);
+    Authentication authenticate(String username, String password);
+
+    Authentication register(String username, String password);
 }

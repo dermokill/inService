@@ -17,8 +17,8 @@ spring:
   mail: # check keys file
     host: smtp.gmail.com
     port: 587
-    username: ${EMAIL_USERNAME}
-    password: ${EMAIL_PASSWORD}
+    username: ${EMAIL_USERNAME} #yunusaouam22@gmail.com
+    password: ${EMAIL_PASSWORD} #waiqxnmzefgmlmrr
     protocol: smtp
     properties:
       mail:

@@ -127,12 +127,9 @@ public class UserService implements IUserService {
             throw new BadRequestException("Invalid birth date format. Please use dd-MM-yyyy.");
         }
 
-        String picture;
-        if (dto.getGender().equals("MALE")) {
-            picture = "images/user_male.jpg";
-        } else {
-            picture = "images/user_female.jpg";
-        }
+        String picture = dto.getGender().equalsIgnoreCase("MALE")
+                ? "images/user_male.jpg"
+                : "images/user_female.jpg";
 
         RoleEnum role = RoleEnum.valueOf(dto.getRole());
 
@@ -158,8 +155,7 @@ public class UserService implements IUserService {
 
         userRepository.save(client);
 
-        Authentication authentication = authService.authenticate(dto.getEmail(),dto.getPassword());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        Authentication authentication = authService.register(dto.getEmail(),dto.getPassword());
 
         return JwtProvider.generateToken(authentication, dto.getRole().toUpperCase());
     }
@@ -183,25 +179,14 @@ public class UserService implements IUserService {
             throw new BadRequestException("Invalid birth date format. Please use dd-MM-yyyy.");
         }
 
-        String picture;
-        if (dto.getGender().equals("MALE")) {
-            picture = "images/user_male.jpg";
-        } else {
-            picture = "images/user_female.jpg";
-        }
+        String picture = dto.getGender().equalsIgnoreCase("MALE")
+                ? "images/user_male.jpg"
+                : "images/user_female.jpg";
 
         RoleEnum role = RoleEnum.valueOf(dto.getRole());
 
         if(!role.equals(RoleEnum.TASKER))
             throw new UnauthorizedException("only a tasker can use this API");
-
-//        List<String> pictures = new ArrayList<>();
-//        if(dto.getPictures() != null) {
-//            for (MultipartFile file : dto.getPictures()) {
-//                String fileName = insertImageByUserName(dto.getFirstName(), dto.getLastName(), file);
-//                pictures.add(fileName);
-//            }
-//        }
 
         Tasker tasker = new Tasker();
         //common user fields
@@ -242,8 +227,7 @@ public class UserService implements IUserService {
         }
         userRepository.save(tasker);
 
-        Authentication authentication = authService.authenticate(dto.getEmail(),dto.getPassword());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        Authentication authentication = authService.register(dto.getEmail(),dto.getPassword());
 
         return JwtProvider.generateToken(authentication, dto.getRole().toUpperCase());
     }

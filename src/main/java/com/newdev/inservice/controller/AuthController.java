@@ -5,6 +5,7 @@ import com.newdev.inservice.config.JwtProvider;
 
 import com.newdev.inservice.requestDtos.RegisterClientDto;
 import com.newdev.inservice.requestDtos.RegisterTaskerDto;
+import com.newdev.inservice.responseDtos.JsonResponse;
 import com.newdev.inservice.serviceInterfaces.IAuthService;
 import com.newdev.inservice.models.User;
 import com.newdev.inservice.repository.UserRepository;
@@ -17,6 +18,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
@@ -75,7 +77,10 @@ public class AuthController {
             System.out.println("Login Successful");
             System.out.println(username+ " ------- " +password);
 
-            Authentication authentication = authService.authenticate(username , password);
+            Authentication authentication = authService.authenticate(
+                    loginRequest.getEmail(),
+                    loginRequest.getPassword()
+            );
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             // trying out new stuff
@@ -86,9 +91,9 @@ public class AuthController {
 
             return new ResponseEntity<>(new AuthResponse(token), HttpStatus.OK);
 
-        } catch (Exception e) {
+        } catch (BadCredentialsException e) {
             System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JsonResponse("Invalid  email or password"));
         }
     }
 }
