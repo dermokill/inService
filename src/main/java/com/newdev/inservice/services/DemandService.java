@@ -9,10 +9,13 @@ import com.newdev.inservice.models.*;
 import com.newdev.inservice.models.enums.DemandStatus;
 import com.newdev.inservice.models.enums.RoleEnum;
 import com.newdev.inservice.repository.DemandRepository;
+import com.newdev.inservice.repository.JobRepository;
 import com.newdev.inservice.repository.UserRepository;
 import com.newdev.inservice.requestDtos.DemandDto;
+import com.newdev.inservice.requestDtos.MessageRequestDto;
 import com.newdev.inservice.requestDtos.PageDto;
 import com.newdev.inservice.responseDtos.DemandResponseDto;
+import com.newdev.inservice.responseDtos.JobResponseDto;
 import com.newdev.inservice.serviceInterfaces.IDemandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -41,17 +44,20 @@ public class DemandService implements IDemandService {
 
     private final UserMapper userMapper;
 
+    private final JobRepository jobRepository;
+
     @Autowired
     public DemandService(DemandRepository demandRepository,
                          UserRepository userRepository,
                          EmailService emailService,
                          WhatsAppService whatsAppService,
-                         UserMapper userMapper) {
+                         UserMapper userMapper, JobRepository jobRepository) {
         this.demandRepository = demandRepository;
         this.userRepository = userRepository;
         this.emailService = emailService;
         this.whatsAppService = whatsAppService;
         this.userMapper = userMapper;
+        this.jobRepository = jobRepository;
     }
 
     @Override
@@ -144,23 +150,127 @@ public class DemandService implements IDemandService {
     }
 
     @Override
-    public Page<DemandResponseDto> getDemandsByTasker(UserDetails userDetails, PageDto pageDto) {
+    public Page<DemandResponseDto> getAllDemands(UserDetails userDetails, PageDto pageDto) {
 
         User user2 = Optional.ofNullable(userDetails.getUsername())
                 .map(userRepository::findByEmail)
-                .orElseThrow(() -> new ResourceNotFoundException("tasker profile not found"));
-
-        if (!user2.getRole().equals(RoleEnum.TASKER))
-            throw new UnauthorizedException("only Taskers can use this api");
-        Tasker tasker = (Tasker) user2;
+                .orElseThrow(() -> new ResourceNotFoundException("user profile not found"));
 
         Pageable pageable = PageRequest.of(pageDto.getPage(), pageDto.getSize(),
                 Sort.by("createdAt").ascending());
 
-        Page<Demand> demandPage = demandRepository.findByTaskerId(tasker.getId(), pageable);
+        Page<Demand> demandPage;
 
+        if (user2 instanceof Tasker tasker) {
+            demandPage = demandRepository.findByTaskerId(tasker.getId(), pageable);
+        }else if (user2 instanceof Client client) {
+            demandPage = demandRepository.findByClientId(client.getId(), pageable);
+        }else {
+            throw new UnauthorizedException("Unsupported user type");
+        }
         return demandPage.map(userMapper::mapToDemandDto);
     }
 
+    @Override
+    public void newMessage(UserDetails userDetails, String demandId, MessageRequestDto messageRequestDto) {
+
+        User loggedUser = Optional.ofNullable(userDetails.getUsername())
+                .map(userRepository::findByEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("user profile not found"));
+
+        Demand demand = demandRepository.findById(demandId)
+                .orElseThrow(() -> new ResourceNotFoundException("Demand with id " + demandId + " not found"));
+
+        boolean isTasker = loggedUser.getId().equals(demand.getTasker().getId());
+        boolean isClient = loggedUser.getId().equals(demand.getClient().getId());
+
+        if (!isTasker && !isClient) {
+            throw new UnauthorizedException("Unauthorized to send message in this demand");
+        }
+
+        Message message = new Message();
+        message.setSender(loggedUser);
+        message.setContent(messageRequestDto.getMessage());
+        message.setSentAt(LocalDateTime.now());
+
+        demand.getMessages().add(message);
+        demand.setUpdatedAt(LocalDateTime.now());
+        demandRepository.save(demand);
+
+        //Sending the email to tasker
+//        String subject = "New Demand Received";
+//        String body = String.format("Hello \n\nYou have received a new Message from %s %s.\n\nSent At : %s. \n\nMessage: %s. \n\nPlease log in to respond.",
+//                loggedUser.getFName(),
+//                loggedUser.getLName(),
+//                message.getSentAt().toString().substring(0,10)+" at "+demand.getRequestDate().toString().substring(11),
+//                message.getContent());
+//        emailService.sendEmail(tasker.getEmail(), subject, body);
+//
+//        //Sending whatsapp message to tasker
+//        String whatsappMessage = String.format(
+//                "Hi %s 👋,\nYou just received a new demand from %s %s.\n\n📌 Description: %s\n\n📍 Location: %s\n\n📅 Date: %s. \n\nClient-Message: %s. \n\nPlease check your dashboard.",
+//                tasker.getFName(),
+//                client.getFName(),
+//                client.getLName(),
+//                demand.getDescription(),
+//                demand.getLocation(),
+//                demand.getRequestDate().toString().substring(0,10)+" at "+demand.getRequestDate().toString().substring(11),
+//                message.getContent()
+//        );
+//        whatsAppService.sendWhatsAppMessage(tasker.getPhone(), whatsappMessage);
+    }
+
+    @Override
+    public void demandRefused(UserDetails userDetails, String demandId) {
+
+        User user = Optional.ofNullable(userDetails.getUsername())
+                .map(userRepository::findByEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("tasker profile not found"));
+
+        Demand demand = demandRepository.findById(demandId)
+                .orElseThrow(() -> new ResourceNotFoundException("Demand with id " + demandId + " not found"));
+
+        if(!(user instanceof Tasker) && !user.getId().equals(demand.getTasker().getId()))
+            throw new UnauthorizedException("only the authorised tasker can validate this demand");
+
+        demand.setStatus(DemandStatus.REFUSED);
+        demand.setUpdatedAt(LocalDateTime.now());
+        demandRepository.save(demand);
+    }
+
+    @Override
+    public JobResponseDto demandAccepted(UserDetails userDetails, String demandId) {
+
+        User user = Optional.ofNullable(userDetails.getUsername())
+                .map(userRepository::findByEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("tasker profile not found"));
+
+        Demand demand = demandRepository.findById(demandId)
+                .orElseThrow(() -> new ResourceNotFoundException("Demand with id " + demandId + " not found"));
+
+        if(!user.getRole().equals(RoleEnum.TASKER) && !user.getId().equals(demand.getTasker().getId()))
+            throw new UnauthorizedException("only the authorised tasker can validate this demand");
+        Tasker tasker = (Tasker) user;
+
+        demand.setStatus(DemandStatus.ACCEPTED);
+        demand.setUpdatedAt(LocalDateTime.now());
+        demandRepository.save(demand);
+
+        Job job = new Job();
+        job.setOriginalDemand(demand);
+        job.setClient(demand.getClient());
+        job.setTasker(tasker);
+        jobRepository.save(job);
+
+        tasker.getJobs().add(job);
+        userRepository.save(tasker);
+
+        Client client = (Client) userRepository.findById(demand.getClient().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Client with id " + demand.getClient().getId() + " not found"));
+        client.getJobs().add(job);
+        userRepository.save(client);
+
+        return userMapper.mapToJobDto(job);
+    }
 
 }

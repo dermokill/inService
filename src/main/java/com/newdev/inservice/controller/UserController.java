@@ -38,42 +38,27 @@ public class UserController {
 
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<JsonResponse> test (@RequestHeader("Authorization") String jwt){
+    @GetMapping("/test") // just testing
+    public ResponseEntity<JsonResponse> test(@RequestHeader("Authorization") String jwt) {
 
         return new ResponseEntity<>(new JsonResponse("welcome to hell mfs"), HttpStatus.OK);
     }
 
     // use @AuthenticationPrincipal to get all the loggedIn user info needed
+    // get logged in user info
     @GetMapping("/profile")
-    public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal UserDetails userDetails) {
 
         Object user = userService.getProfile(userDetails);
 
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-
-
-    @PutMapping(value = "insert-images",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> insertImagesTasker (@AuthenticationPrincipal UserDetails userDetails,
-                                                 @Valid @ModelAttribute ImagesDto imagesDto) throws Exception
-    {
-        userService.insertTaskerImages(userDetails,imagesDto);
+    // insert images for the tasker directly after he registers
+    @PutMapping(value = "insert-images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> insertImagesTasker(@AuthenticationPrincipal UserDetails userDetails,
+                                                @Valid @ModelAttribute ImagesDto imagesDto) throws Exception {
+        userService.insertTaskerImages(userDetails, imagesDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
-
-
-//    @GetMapping("/clients")  // testing
-//    public ResponseEntity<?> getClients(
-//            @RequestBody RoleDto dto) {
-//
-//
-//        List<User> users = (dto.role() != null)
-//                ? userRepository.getUsersByRole(RoleEnum.valueOf(dto.role().toUpperCase()))
-//                : userRepository.findAll();
-//
-//        return new ResponseEntity<>(users, HttpStatus.OK);
-//    }
 }

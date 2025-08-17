@@ -1,7 +1,6 @@
 package com.newdev.inservice.serviceInterfaces;
 
 
-import com.newdev.inservice.models.User;
 import com.newdev.inservice.requestDtos.ImagesDto;
 import com.newdev.inservice.requestDtos.RegisterClientDto;
 import com.newdev.inservice.requestDtos.RegisterTaskerDto;
@@ -14,7 +13,7 @@ public interface IUserService {
 
     Object getProfile(UserDetails userDetails);
 
-    Page<User> getClientsAndAdmins(UserDetails userDetails, String role, int page, int size);
+    Page<?> getAllUsers(UserDetails userDetails, String role, int page, int size);
 
     String insertClient(RegisterClientDto dto);
 

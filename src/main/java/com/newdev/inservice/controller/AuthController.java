@@ -49,7 +49,7 @@ public class AuthController {
     }
 
 
-    @PostMapping("/register-client")
+    @PostMapping("/register-client") // register client
     public ResponseEntity<?> registerClient(@Valid @RequestBody RegisterClientDto dto){
 
             String token = userService.insertClient(dto);
@@ -57,7 +57,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponse(token));
     }
 
-    @PostMapping("/register-tasker")
+    @PostMapping("/register-tasker") // register tasker
     public ResponseEntity<?> registerTasker(@Valid @RequestBody RegisterTaskerDto dto) throws Exception {
 
         System.out.println("IM HERE"); // this is not reached
@@ -67,7 +67,7 @@ public class AuthController {
     }
 
 
-    @PostMapping("/login")
+    @PostMapping("/login") // login
     public ResponseEntity<?> login (@Valid @RequestBody LoginRequest loginRequest) {
 
         try {

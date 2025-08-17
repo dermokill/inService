@@ -1,6 +1,7 @@
 package com.newdev.inservice;
 
 
+import com.newdev.inservice.exceptions.ResourceNotFoundException;
 import com.newdev.inservice.models.Admin;
 import com.newdev.inservice.models.Client;
 import com.newdev.inservice.models.Tasker;
@@ -51,17 +52,18 @@ public class InServiceApplication implements CommandLineRunner {
 //                .gender(Gender.MALE)
 //                .build();
 
-        Admin client = (Admin) userRepository.getById("071ff29b-2b0e-44f3-a0ae-035d554a548d");
-       // Tasker client = new Tasker();
-        client.setFName("admin");
-        client.setGender(Gender.MALE);
-        client.setLName("admin");
-        client.setEmail("admin@gmail.com");
-        client.setPassword(passwordEncoder.encode("123456789"));
-        client.setCin("CD151515");
-        client.setRole(RoleEnum.ADMIN);
-        client.setPhone("123456789");
-        client.setBirthdate(LocalDate.of(2000, 8, 5));
+     //   Admin client = new Admin();
+ //       Client client = (Client) userRepository.findById("12ac89ad-4a6d-4c1d-afec-a1bcb90b1094")
+  //              .orElseThrow(() -> new ResourceNotFoundException("client not found"));
+//        client.setFName("admin");
+//        client.setGender(Gender.MALE);
+//        client.setLName("admin");
+//        client.setEmail("admin@gmail.com");
+//        client.setPassword(passwordEncoder.encode("123456789"));
+//        client.setCin("CD151515");
+//        client.setRole(RoleEnum.ADMIN);
+//          client.setPhone("+212644061629");
+//        client.setBirthdate(LocalDate.of(2000, 8, 5));
 //        client.setTaskerArea("Fes");
 //        client.setTaskerType(TaskerType.SHOP_OWNER);
 //        client.setExperience("5years");

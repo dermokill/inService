@@ -38,7 +38,6 @@ public class AppConfig {
 
     private final CustomUserServiceImpl customUserService;
 
-
     @Bean
     public JwtTokenValidator jwtTokenValidator() {
         return new JwtTokenValidator(customUserService);

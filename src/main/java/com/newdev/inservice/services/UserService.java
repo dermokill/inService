@@ -7,7 +7,7 @@ import com.newdev.inservice.exceptions.*;
 import com.newdev.inservice.requestDtos.ImagesDto;
 import com.newdev.inservice.requestDtos.RegisterClientDto;
 import com.newdev.inservice.requestDtos.RegisterTaskerDto;
-import com.newdev.inservice.responseDtos.*;
+import com.newdev.inservice.responseDtos.AdminDto;
 import com.newdev.inservice.serviceInterfaces.IAuthService;
 import com.newdev.inservice.serviceInterfaces.IUserService;
 import com.newdev.inservice.models.*;
@@ -22,7 +22,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -73,14 +72,13 @@ public class UserService implements IUserService {
                 .map(userRepository::findByEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User profile not found"));
 
-        if(user.getRole() == RoleEnum.ADMIN) {
-            return userMapper.mapToAdminDto((Admin) user);
+        if(user instanceof Admin admin) {
+            return userMapper.mapToAdminDto(admin);
 
-        }else if (user.getRole() == RoleEnum.CLIENT){
-            return userMapper.mapToClientDto((Client) user);
+        }else if (user instanceof Client client) {
+            return userMapper.mapToClientDto(client);
 
-        }else if (user.getRole() == RoleEnum.TASKER) {
-            Tasker tasker = (Tasker) user;
+        }else if (user instanceof Tasker tasker) {
 
             return switch (tasker.getTaskerType()) {
                 case SHOP_OWNER -> userMapper.mapToTaskerShopOwnerDto(tasker);
@@ -94,19 +92,43 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Page<User> getClientsAndAdmins(UserDetails userDetails, String role, int page, int size) {
+    public Page<?> getAllUsers(UserDetails userDetails, String role, int page, int size) {
 
         User admin = Optional.ofNullable(userDetails.getUsername())
                 .map(userRepository::findByEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Admin profile not found"));
 
-        if(!admin.getRole().equals(RoleEnum.ADMIN))
-            throw new UnauthorizedException("only an Admin can see clients and admins");
+        if (!admin.getRole().equals(RoleEnum.ADMIN)) {
+            throw new UnauthorizedException("Only an Admin can see users.");
+        }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
 
-        return userRepository.findByRole(RoleEnum.valueOf(role.toUpperCase()), pageable);
+        RoleEnum roleEnum = RoleEnum.valueOf(role.toUpperCase());
+
+        Page<User> usersPage = userRepository.findByRole(roleEnum, pageable);
+
+        // Map depending on role
+        return usersPage.map(user -> {
+            if (user instanceof Admin a) {
+                return userMapper.mapToAdminDto(a);
+
+            } else if (user instanceof Client c) {
+                return userMapper.mapToClientDto(c);
+
+            } else if (user instanceof Tasker t) {
+                return switch (t.getTaskerType()) {
+                    case SHOP_OWNER -> userMapper.mapToTaskerShopOwnerDto(t);
+                    case ENTREPRISE -> userMapper.mapToTaskerEntrepriseDto(t);
+                    default -> throw new BadRequestException("Unsupported tasker type");
+                };
+
+            } else {
+                throw new UnauthorizedException("Unknown role for user: " + user.getFName() + user.getLName());
+            }
+        });
     }
+
 
     @Override
     public String insertClient(RegisterClientDto dto) {

@@ -14,4 +14,7 @@ public interface DemandRepository extends MongoRepository<Demand,String> {
 
 
     Page<Demand> findByTaskerId(String id, Pageable pageable);
+
+    Page<Demand> findByClientId(String id, Pageable pageable);
+
 }

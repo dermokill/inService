@@ -26,7 +26,8 @@ public class AdminController {
         this.userService = userService;
     }
 
-    @PutMapping("validate-tasker/{taskerId}") // ADMIN Only
+    // ADMIN Only // validate tasker account
+    @PutMapping("validate-tasker/{taskerId}")
     public ResponseEntity<?> validateTasker (@AuthenticationPrincipal UserDetails userDetails,
                                              @PathVariable String taskerId)
     {
@@ -34,17 +35,14 @@ public class AdminController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping // ADMIN Only
-    public ResponseEntity<PagedResponseDto<User>> getAllUsers(@AuthenticationPrincipal UserDetails userDetails,
+    // ADMIN Only
+    // get all clients, tasker, admins just have to specify role (ADMIN, CLIENT, TASKER)
+    // returns paged list
+    @GetMapping
+    public ResponseEntity<PagedResponseDto<?>> getAllUsers(@AuthenticationPrincipal UserDetails userDetails,
                                                           @RequestBody RoleDto dto) {
 
-        System.out.println(dto.getSize() +" Size "+ dto.getPage()+" Pages ");
-        Page<User> users = userService.getClientsAndAdmins(userDetails,
-                dto.getRole(), dto.getPage(), dto.getSize());
-
-        for(User user : users.getContent()) {
-            user.setPassword("");
-        }
+        Page<?> users = userService.getAllUsers(userDetails, dto.getRole(), dto.getPage(), dto.getSize());
         return new ResponseEntity<>(new PagedResponseDto<>(users), HttpStatus.OK);
     }
 }

@@ -32,13 +32,13 @@ public class Job {
     @DBRef
     private Tasker tasker;
 
-    private LocalDateTime startedAt;
+    private LocalDateTime startedAt = LocalDateTime.now();
 
     private LocalDateTime finishedAt;
 
     private JobStatus status = JobStatus.IN_PROGRESS;
 
-    private int clientRating;
+    private int clientRating = 0;
 
-    private String clientFeedback;
+    private String clientFeedback = "";
 }

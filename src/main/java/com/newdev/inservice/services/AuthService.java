@@ -30,7 +30,6 @@ public class AuthService implements IAuthService {
         this.authenticationManager = authenticationManager;
     }
 
-
     @Override
     public Authentication authenticate(String username, String password) {
         return authenticationManager.authenticate(
@@ -57,7 +56,6 @@ public class AuthService implements IAuthService {
         }
 
         return new UsernamePasswordAuthenticationToken(userDetails, null , userDetails.getAuthorities());
-
     }*/
 
     @Override
@@ -69,7 +67,7 @@ public class AuthService implements IAuthService {
         List<GrantedAuthority> authorities = new ArrayList<>();
 
         UserDetails userDetails = new User(username, passwordEncoder.encode(password), authorities);
-        System.out.println("Sign in userDetails - " +userDetails);
+        System.out.println("Sign up userDetails - " +userDetails);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails,
                 null, userDetails.getAuthorities());

@@ -28,7 +28,7 @@ spring:
             enable: true
   data:
     mongodb:
-      database: inService_test
+      database: inService
       host: localhost
       port: 27017
   main:

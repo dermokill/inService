@@ -35,11 +35,13 @@ public class TaskerController {
         this.demandService = demandService;
     }
 
+    // get a single tasker by his id
     @GetMapping("{taskerId}")
     public ResponseEntity<?> getTasker(@PathVariable String taskerId) {
         return ResponseEntity.ok(taskerService.getTasker(taskerId));
     }
 
+    // add a new demand, needs to select the tasker first then click add new demand to him
     @PostMapping("{taskerId}/demands")
     public ResponseEntity<?> newDemand (@AuthenticationPrincipal UserDetails userDetails,
                                         @PathVariable String taskerId,
@@ -49,11 +51,7 @@ public class TaskerController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("/demands")
-    public ResponseEntity<?> getDemandsByTasker(@AuthenticationPrincipal UserDetails userDetails,
-                                                @RequestBody PageDto PageDto) {
-        return ResponseEntity.ok(new PagedResponseDto<>(demandService.getDemandsByTasker(userDetails,PageDto)));
-    }
+
 
 
 
