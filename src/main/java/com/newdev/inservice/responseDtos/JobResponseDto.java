@@ -10,6 +10,7 @@ public record JobResponseDto(String id,
                              SubTaskerDto tasker,
                              LocalDateTime startedAt,
                              LocalDateTime finishedAt,
+                             LocalDateTime updatedAt,
                              JobStatus status,
                              int clientRating,
                              String clientFeedback) {

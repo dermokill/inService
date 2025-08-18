@@ -3,6 +3,7 @@ package com.newdev.inservice.services;
 
 import com.newdev.inservice.Mapping.UserMapper;
 import com.newdev.inservice.exceptions.BadRequestException;
+import com.newdev.inservice.exceptions.ConflictException;
 import com.newdev.inservice.exceptions.ResourceNotFoundException;
 import com.newdev.inservice.exceptions.UnauthorizedException;
 import com.newdev.inservice.models.*;
@@ -196,28 +197,6 @@ public class DemandService implements IDemandService {
         demand.getMessages().add(message);
         demand.setUpdatedAt(LocalDateTime.now());
         demandRepository.save(demand);
-
-        //Sending the email to tasker
-//        String subject = "New Demand Received";
-//        String body = String.format("Hello \n\nYou have received a new Message from %s %s.\n\nSent At : %s. \n\nMessage: %s. \n\nPlease log in to respond.",
-//                loggedUser.getFName(),
-//                loggedUser.getLName(),
-//                message.getSentAt().toString().substring(0,10)+" at "+demand.getRequestDate().toString().substring(11),
-//                message.getContent());
-//        emailService.sendEmail(tasker.getEmail(), subject, body);
-//
-//        //Sending whatsapp message to tasker
-//        String whatsappMessage = String.format(
-//                "Hi %s 👋,\nYou just received a new demand from %s %s.\n\n📌 Description: %s\n\n📍 Location: %s\n\n📅 Date: %s. \n\nClient-Message: %s. \n\nPlease check your dashboard.",
-//                tasker.getFName(),
-//                client.getFName(),
-//                client.getLName(),
-//                demand.getDescription(),
-//                demand.getLocation(),
-//                demand.getRequestDate().toString().substring(0,10)+" at "+demand.getRequestDate().toString().substring(11),
-//                message.getContent()
-//        );
-//        whatsAppService.sendWhatsAppMessage(tasker.getPhone(), whatsappMessage);
     }
 
     @Override
@@ -232,6 +211,9 @@ public class DemandService implements IDemandService {
 
         if(!(user instanceof Tasker) && !user.getId().equals(demand.getTasker().getId()))
             throw new UnauthorizedException("only the authorised tasker can validate this demand");
+
+        if(demand.getStatus().equals(DemandStatus.REFUSED))
+            throw new ConflictException("Demand is already refused");
 
         demand.setStatus(DemandStatus.REFUSED);
         demand.setUpdatedAt(LocalDateTime.now());
@@ -250,7 +232,11 @@ public class DemandService implements IDemandService {
 
         if(!user.getRole().equals(RoleEnum.TASKER) && !user.getId().equals(demand.getTasker().getId()))
             throw new UnauthorizedException("only the authorised tasker can validate this demand");
+
+        if(demand.getStatus().equals(DemandStatus.ACCEPTED))
+            throw new ConflictException("Demand is already accepted");
         Tasker tasker = (Tasker) user;
+
 
         demand.setStatus(DemandStatus.ACCEPTED);
         demand.setUpdatedAt(LocalDateTime.now());

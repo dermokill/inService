@@ -229,7 +229,7 @@ public class UserService implements IUserService {
         tasker.setTaskerArea(dto.getTaskerArea());
         tasker.setExperience(dto.getExperience());
         tasker.setJobNumber(dto.getJobNumber());
-        tasker.setRating(0);
+        //tasker.setRating(0);
         //tasker.setReviews(reviews);
 
         tasker.setVerified(false);

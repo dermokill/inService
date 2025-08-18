@@ -30,7 +30,9 @@ public class Tasker extends User {
 
     private int jobNumber;
 
-    private int rating;
+    private double mainRating = 0;
+
+    private List<Integer> ratings =  new ArrayList<>(); // List<Map<Integer,String>> ratings
 
     private List<String> reviews = new ArrayList<>();
 

@@ -36,6 +36,8 @@ public class Job {
 
     private LocalDateTime finishedAt;
 
+    private LocalDateTime updatedAt;
+
     private JobStatus status = JobStatus.IN_PROGRESS;
 
     private int clientRating = 0;

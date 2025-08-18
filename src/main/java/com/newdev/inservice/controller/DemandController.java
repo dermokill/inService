@@ -2,6 +2,7 @@ package com.newdev.inservice.controller;
 
 
 import com.newdev.inservice.exceptions.BadRequestException;
+import com.newdev.inservice.exceptions.UnauthorizedException;
 import com.newdev.inservice.models.enums.DemandStatus;
 import com.newdev.inservice.requestDtos.DemandStatusDto;
 import com.newdev.inservice.requestDtos.MessageRequestDto;
@@ -49,14 +50,13 @@ public class DemandController {
     // get demand by id
     @GetMapping("/{demandId}")
     public ResponseEntity<?> getDemandById(@PathVariable String demandId) {
-
         return new ResponseEntity<>(demandService.getDemandById(demandId),HttpStatus.OK);
     }
 
     // TASKER ONLY
     // frontend will send : ACCEPTED , REFUSED
     @PutMapping("/{demandId}")
-    public ResponseEntity<?> acceptOrRefuseDemand(@AuthenticationPrincipal UserDetails userDetails,
+    public ResponseEntity<?> validateDemand(@AuthenticationPrincipal UserDetails userDetails,
                                                   @PathVariable String demandId,
                                                   @RequestBody @Valid DemandStatusDto demandStatusDto) {
 
@@ -66,13 +66,13 @@ public class DemandController {
         return switch (status) {
             case REFUSED -> {
                 demandService.demandRefused(userDetails, demandId);
-                yield ResponseEntity.ok(new JsonResponse("Demand refused"));
+                yield new ResponseEntity<>(HttpStatus.OK);
             }
             case ACCEPTED -> {
                 JobResponseDto jobResponseDto = demandService.demandAccepted(userDetails, demandId);
                 yield ResponseEntity.ok(jobResponseDto);
             }
-            case  PENDING -> throw new BadRequestException("validate demand by ACCEPTED or REFUSED only");
+            case  PENDING -> throw new BadRequestException("can only validate the demand by ACCEPTED or REFUSED");
         };
     }
 
