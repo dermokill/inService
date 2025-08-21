@@ -71,6 +71,8 @@ public class DemandService implements IDemandService {
         if (user.getId().equals(taskerId))
             throw new UnauthorizedException("You cant request a task from yourself");
 
+        if(!user.getRole().equals(RoleEnum.CLIENT))
+            throw new UnauthorizedException("Only a client can make a demand for now");
         // Any User can request a task no matter the role
         Client client = (Client) user; // FIX TASKER CANT BE CAST TO CLIENT LATER
 

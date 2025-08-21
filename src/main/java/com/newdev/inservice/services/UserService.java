@@ -83,7 +83,7 @@ public class UserService implements IUserService {
             return switch (tasker.getTaskerType()) {
                 case SHOP_OWNER -> userMapper.mapToTaskerShopOwnerDto(tasker);
                 case ENTREPRISE -> userMapper.mapToTaskerEntrepriseDto(tasker);
-                default -> throw new BadRequestException("Unsupported tasker type");
+                case INDIVIDUAL -> userMapper.mapToTaskerIndividualDto(tasker);
             };
 
         }else {
@@ -120,7 +120,7 @@ public class UserService implements IUserService {
                 return switch (t.getTaskerType()) {
                     case SHOP_OWNER -> userMapper.mapToTaskerShopOwnerDto(t);
                     case ENTREPRISE -> userMapper.mapToTaskerEntrepriseDto(t);
-                    default -> throw new BadRequestException("Unsupported tasker type");
+                    case INDIVIDUAL -> userMapper.mapToTaskerIndividualDto(t);
                 };
 
             } else {

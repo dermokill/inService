@@ -2,6 +2,7 @@ package com.newdev.inservice.Mapping;
 
 
 import com.newdev.inservice.models.*;
+import com.newdev.inservice.models.enums.TaskerType;
 import com.newdev.inservice.responseDtos.*;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +54,89 @@ public class UserMapper {
                 client.getPersonalAddress(),
                 demandDtos,
                 jobDtos
+        );
+    }
+
+    public TaskerResponseDto toTaskerResponse(Tasker user) {
+        List<DemandResponseDto> demands = user.getDemands().stream()
+                .map(this::mapToDemandDto)
+                .toList();
+
+        List<JobResponseDto> jobs = user.getJobs().stream()
+                .map(this::mapToJobDto)
+                .toList();
+
+        TaskerResponseDto dto = new TaskerResponseDto();
+        dto.setId(user.getId());
+        dto.setFirstName(user.getFName());
+        dto.setLastName(user.getLName());
+        dto.setGender(user.getGender());
+        dto.setBirthdate(user.getBirthdate());
+        dto.setCin(user.getCin());
+        dto.setPhone(user.getPhone());
+        dto.setEmail(user.getEmail());
+
+        dto.setTaskerType(user.getTaskerType());
+        dto.setSkill(user.getSkill());
+        dto.setTaskerCity(user.getTaskerCity());
+        dto.setTaskerArea(user.getTaskerArea());
+        dto.setExperience(user.getExperience());
+        dto.setJobNumber(user.getJobNumber());
+        dto.setRating(user.getMainRating());
+
+        if (user.getTaskerType() == TaskerType.SHOP_OWNER) {
+            dto.setShopAddress(user.getShopOwner().getShopAddress());
+            dto.setShopLicenceNumber(user.getShopOwner().getShopLicenceNumber());
+        }
+
+        if (user.getTaskerType() == TaskerType.ENTREPRISE) {
+            dto.setEntrepriseAddress(user.getEnterprise().getEntrepriseAddress());
+            dto.setEntrepriseName(user.getEnterprise().getEntrepriseName());
+            dto.setEntrepriseLicenceNumber(user.getEnterprise().getEntrepriseLicenceNumber());
+            dto.setEmployeeNumber(user.getEnterprise().getEmployeeNumber());
+        }
+        dto.setDemands(demands);
+        dto.setJobs(jobs);
+
+        return dto;
+    }
+
+    public TaskerIndividualDto  mapToTaskerIndividualDto(Tasker tasker) {
+        List<DemandResponseDto> demands = tasker.getDemands().stream()
+                .map(this::mapToDemandDto)
+                .toList();
+
+        List<JobResponseDto> jobs = tasker.getJobs().stream()
+                .map(this::mapToJobDto)
+                .toList();
+
+        return new TaskerIndividualDto(
+                tasker.getId(),
+                tasker.getFName(),
+                tasker.getLName(),
+                tasker.getGender(),
+                tasker.getBirthdate(),
+                tasker.getCin(),
+                tasker.getPhone(),
+                tasker.getEmail(),
+                tasker.getRole(),
+                tasker.getProfileImage(),
+                tasker.getCreatedAt(),
+                tasker.getUpdatedAt(),
+                tasker.getTaskerType(),
+                tasker.getSkill(),
+                tasker.getTaskerCity(),
+                tasker.getTaskerArea(),
+                tasker.getExperience(),
+                tasker.getJobNumber(),
+                tasker.getMainRating(),
+                tasker.getRatings(),
+                tasker.getReviews(),
+                tasker.getMainPicture(),
+                tasker.getPictures(),
+                tasker.isVerified(),
+                demands,
+                jobs
         );
     }
 

@@ -40,7 +40,7 @@ public class AdminController {
     // returns paged list
     @GetMapping
     public ResponseEntity<PagedResponseDto<?>> getAllUsers(@AuthenticationPrincipal UserDetails userDetails,
-                                                          @RequestBody RoleDto dto) {
+                                                           @RequestBody RoleDto dto) {
 
         Page<?> users = userService.getAllUsers(userDetails, dto.getRole(), dto.getPage(), dto.getSize());
         return new ResponseEntity<>(new PagedResponseDto<>(users), HttpStatus.OK);

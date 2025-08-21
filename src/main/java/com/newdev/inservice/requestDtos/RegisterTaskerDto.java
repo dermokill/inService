@@ -46,15 +46,20 @@ public class RegisterTaskerDto {
 
     // Tasker-specific fields
     @NotBlank(message = "tasker Type is required")
-    private String taskerType;
+    private String taskerType; // "INDIVIDUAL", "SHOP_OWNER", "ENTREPRISE"
+
     @NotBlank(message = "Skill is required")
     private String skill;
+
     @NotBlank(message = "tasker City is required")
     private String taskerCity;
+
     @NotBlank(message = "Area is required")
     private String taskerArea;
+
     @NotBlank(message = "Experience is required")
     private String experience;
+
     @NotNull(message = "job Number is required")
     private Integer jobNumber;
 
@@ -62,6 +67,7 @@ public class RegisterTaskerDto {
 
     // ShopOwner fields
     private String shopAddress;
+
     private Integer shopLicenceNumber;
 
 
